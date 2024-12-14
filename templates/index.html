@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tax and Payment Tracking System</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>LLC Tax and Payment Tracking System</h1>
+        <form id="taxForm" action="/submit" method="POST">
+            <label for="company">Company:</label>
+            <input type="text" id="company" name="company" placeholder="Company name" required>
+            <label for="amount">Amount:</label>
+            <input type="number" id="amount" name="amount" step="0.01" placeholder="Enter amount" required>
+            <label for="paymentDate">Payment Date:</label>
+            <input type="date" id="paymentDate" name="paymentDate">
+            <label for="status">Status:</label>
+            <select id="status" name="status" required>
+                <option value="paid">Paid</option>
+                <option value="unpaid">Unpaid</option>
+            </select>
+            <label for="dueDate">Due Date:</label>
+            <select id="dueDate" name="dueDate" required>
+                <option value="">Select the due dates</option>
+                {% for due_date in due_dates %}
+                <option value="{{ due_date }}">{{ due_date }}</option>
+                {% endfor %}
+            </select>
+            <label for="taxRate">Tax Rate:</label>
+            <input type="number" id="taxRate" name="taxRate" step="0.01" placeholder="Enter tax rate" required>
+            <button type="submit">Save</button>
+        </form>
+
+        <h3>Payment Summary</h3>
+        <select id="summaryDueDate">
+            <option value="">Select the due dates</option>
+            {% for due_date in due_dates %}
+            <option value="{{ due_date }}">{{ due_date }}</option>
+            {% endfor %}
+        </select>
+        <div id="summary"></div>
+
+        <h3>All Payments</h3>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Company</th>
+                    <th>Amount</th>
+                    <th>Payment Date</th>
+                    <th>Status</th>
+                    <th>Due Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for records in records %}
+                <tr>
+                    <td>{{ records[0] }}</td>
+                    <td>{{ records[1] }}</td>
+                    <td>{{ records[2] }}</td>
+                    <td>{% if records[3] %}{{ records[3]|format_date }}{% else %}NA{% endif %}</td>
+                    <td>{{ records[4] }}</td>
+                    <td>{{ records[5] }}</td>
+                    <td>
+                        <button class="edit-btn" onclick="openEditPopup('{{ records[0] }}', '{{ records[1] }}', '{{ records[2] }}', '{{ records[3] }}', '{{ records[4] }}', '{{ records[5] }}', '{{ records[6] }}')">Edit</button>
+                        <button class="delete-btn" onclick="deleteRecord('{{ records[0] }}')">Delete</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="overlay" id="overlay"></div>
+    <div class="edit-popup" id="editPopup">
+        <h2>Edit Details</h2>
+        <form id="editForm">
+            <input type="hidden" id="editId" name="editId">
+            <label for="editCompany">Company:</label>
+            <input type="text" id="editCompany" name="editCompany" required>
+            <label for="editAmount">Amount:</label>
+            <input type="number" id="editAmount" name="editAmount" step="0.01" required>
+            <label for="editPaymentDate">Payment Date:</label>
+            <input type="date" id="editPaymentDate" name="editPaymentDate" required>
+            <label for="editStatus">Status:</label>
+            <select id="editStatus" name="editStatus" required>
+                <option value="paid">Paid</option>
+                <option value="unpaid">Unpaid</option>
+            </select>
+            <label for="editDueDate">Due Date:</label>
+            <select id="editDueDate" name="editDueDate" required>
+                <option value="">Select Due Date</option>
+                {% for due_date in due_dates %}
+                <option value="{{ due_date }}">{{ due_date }}</option>
+                {% endfor %}
+            </select>
+            <label for="editTaxRate">Tax Rate:</label>
+            <input type="number" id="editTaxRate" name="editTaxRate" step="0.01" required>
+            <button type="button" onclick="saveEdit()">Save</button>
+            <button type="button" class="cancel-btn" onclick="closeEditPopup()">Cancel</button>
+        </form>
+    </div>
+    <script src="/static/app.js"></script>
+</body>
+</html>
